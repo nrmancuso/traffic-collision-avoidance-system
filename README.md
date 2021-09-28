@@ -66,10 +66,17 @@ h: `b >= c`
 i: `f >= c`
 
 
+
 87: `!(a) || ((a) && (!(h)))`
+
 91: `d && (g) && (i)`
+
 107: `a && (g) && (h)`
+
 111: `!(d) || ((d) && (i)`
+
 125: `High_Confidence && (Own_Tracked_Alt_Rate <= 600) && (e > 600)`
+
 131: `(enabled && ((tcas_equipped && intent_not_known) || !tcas_equipped)`
+
 
