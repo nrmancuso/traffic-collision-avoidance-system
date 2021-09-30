@@ -21,29 +21,29 @@ int Positive_RA_Alt_Thresh_3;
 
 void print_args() {
     printf("\nargs: ");
-    printf("%d", Cur_Vertical_Sep);
+    printf("%d\n", Cur_Vertical_Sep);
     printf(" ");
-    printf("%d", High_Confidence);
+    printf("%d\n", High_Confidence);
     printf(" ");
-    printf("%d", Two_of_Three_Reports_Valid);
+    printf("%d\n", Two_of_Three_Reports_Valid);
     printf(" ");
-    printf("%d", Own_Tracked_Alt);
+    printf("%d\n", Own_Tracked_Alt);
     printf(" ");
-    printf("%d", Own_Tracked_Alt_Rate);
+    printf("%d\n", Own_Tracked_Alt_Rate);
     printf(" ");
-    printf("%d", Other_Tracked_Alt);
+    printf("%d\n", Other_Tracked_Alt);
     printf(" ");
-    printf("%d", Alt_Layer_Value);
+    printf("%d\n", Alt_Layer_Value);
     printf(" ");
-    printf("%d", Up_Separation);
+    printf("%d\n", Up_Separation);
     printf(" ");
-    printf("%d", Down_Separation);
+    printf("%d\n", Down_Separation);
     printf(" ");
-    printf("%d", Other_RAC);
+    printf("%d\n", Other_RAC);
     printf(" ");
-    printf("%d", Other_Capability);
+    printf("%d\n", Other_Capability);
     printf(" ");
-    printf("%d", Climb_Inhibit);
+    printf("%d\n", Climb_Inhibit);
     printf(" ");
     printf("\n");
 }
@@ -76,24 +76,24 @@ void initialize()
 int Positive_RA_Alt_Thresh(int Alt)
 {
     int res = 0;
-    printf("in Positive_RA_Alt_Thresh\n");
+    //printf("in Positive_RA_Alt_Thresh\n");
 
     if(Alt == 0) {
         res = Positive_RA_Alt_Thresh_0;
-        printf("branch 0\n");
+        //printf("branch 0\n");
     }
     else if(Alt == 1) {
         res = Positive_RA_Alt_Thresh_1;
-        printf("branch 1\n");
+        //printf("branch 1\n");
 
     }
     else if( Alt == 2) {
         res = Positive_RA_Alt_Thresh_2;
-        printf("branch 2\n");
+        //printf("branch 2\n");
     }
     else if(Alt == 3) {
         res = Positive_RA_Alt_Thresh_3;
-        printf("branch 3\n");
+        //printf("branch 3\n");
     }
     return res;
 }
@@ -115,19 +115,16 @@ int Non_Crossing_Biased_Climb()
     int result;
     
     upward_preferred = Inhibit_Biased_Climb() > Down_Separation;
-    printf("in Non_Crossing_Biased_Climb\n");
 
     if (upward_preferred)
     {
-        printf("in Non_Crossing_Biased_Climb, upward_preferred == true\n");
         result = !(Own_Below_Threat()) || ((Own_Below_Threat()) && (!(Down_Separation >= ALIM())));
+        printf("#1 A: %d B: %d C: %d\n", !(Own_Below_Threat()), Own_Below_Threat(), !(Down_Separation >= ALIM()));
     }
     else
     {
-        printf("in Non_Crossing_Biased_Climb, upward_preferred == false\n");
-        print_args();
-        printf("Own_Above_Threat %d\n", Own_Above_Threat());
         result = Own_Above_Threat() && (Cur_Vertical_Sep >= 300 ) && (Up_Separation >= ALIM());
+            printf("#2 A: %d B: %d C: %d\n", Own_Above_Threat(), (Cur_Vertical_Sep >= 300 ),  (Up_Separation >= ALIM()));
     }
     
     return result;
@@ -144,10 +141,12 @@ int Non_Crossing_Biased_Descend()
     if (upward_preferred)
     {
         result = Own_Below_Threat() && (Cur_Vertical_Sep >= 300) && (Down_Separation >= ALIM());
+        printf("#3 A: %d B: %d C: %d\n", Own_Below_Threat(), (Cur_Vertical_Sep >= 300), (Down_Separation >= ALIM()));
     }
     else
     {
         result = !(Own_Above_Threat()) || ((Own_Above_Threat()) && (Up_Separation >= ALIM()));
+        printf("#4 A: %d B: %d C: %d\n", !(Own_Above_Threat()), ((Own_Above_Threat()), (Up_Separation >= ALIM())));
     }
     
     return result;
@@ -162,15 +161,20 @@ int alt_sep_test()
     int alt_sep;
     
     enabled = High_Confidence && (Own_Tracked_Alt_Rate <= 600) && (Cur_Vertical_Sep > 600);
+    printf("#5 A: %d B: %d C: %d\n", High_Confidence, (Own_Tracked_Alt_Rate <= 600), (Cur_Vertical_Sep > 600));
     tcas_equipped = Other_Capability == 1 ;
     intent_not_known = Two_of_Three_Reports_Valid && Other_RAC == 0 ;
+    printf("#6 A: %d B: %d\n", Two_of_Three_Reports_Valid, Other_RAC == 0);
     
     alt_sep = 0 ;
     
     if (enabled && ((tcas_equipped && intent_not_known) || !tcas_equipped))
     {
-        need_upward_RA = Non_Crossing_Biased_Climb() && Own_Below_Threat() ;
+        need_upward_RA = Non_Crossing_Biased_Climb() && Own_Below_Threat();
+        printf("#7 A: %d B: %d\n", Non_Crossing_Biased_Climb(), Own_Below_Threat());
+
         need_downward_RA = Non_Crossing_Biased_Descend() && Own_Above_Threat();
+        printf("#8 A: %d B: %d\n", Non_Crossing_Biased_Descend(), Own_Above_Threat());
         
         if(need_upward_RA && need_downward_RA) {
             // i think this is unreachable

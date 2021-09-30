@@ -29,6 +29,8 @@ test: $(TARGET).c
 	./$(TARGET).exec 700 1 1 1 1 0 2 100 500 0 0 0
 	./$(TARGET).exec 700 1 1 1 1 0 3 100 500 0 0 0
 	./$(TARGET).exec 50 1 1 1 1 0 3 100 500 1 1 1
+
+	
 	gcov -b $(TARGET).exec-$(TARGET).gcno
 	gcovr -r . --html --html-details -o predicate_coverage.html
 

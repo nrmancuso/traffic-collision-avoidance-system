@@ -1,172 +1,496 @@
 # traffic-collision-avoidance-system
 
-## Predicates
+## Predicate Coverage
 
------------------------------------------
+### Predicates
 
-To generate test cases, I created a simple "mask" system:
+Own_Below_Threat()
 
-24: `Own_Tracked_Alt < Other_Tracked_Alt`
+`Own_Tracked_Alt < Other_Tracked_Alt`
 
-T: - - - 0 - 1 - - - - - -
+Own_Above_Threat()
 
-F: - - - 0 - 0 - - - - - -
+`Other_Tracked_Alt < Own_Tracked_Alt`
 
+Positive_RA_Alt_Thresh()
 
-29: `Other_Tracked_Alt < Own_Tracked_Alt`
+`Alt` 0 - 3
 
-T: - - - 1 - 0 - - - - - -
+Inhibit_Biased_Climb()
 
-F: - - - 0 - 0 - - - - - -
+`Climb_Inhibit` T \ F
 
-52: `Alt == 0`
+Non_Crossing_Biased_Climb()
 
-T: - - - - - - 0 - - - - -
+`upward_preferred`
 
-F: - - - - - - 1 - - - - -
+`result`
 
-54: `Alt == 1`
+Non_Crossing_Biased_Descend()
 
-T: - - - - - - 1 - - - - -
+`upward_preferred`
 
-F: - - - - - - 0 - - - - -
+`result`
 
-57: `Alt == 2`
+alt_sep_test()
 
-T: - - - - - - 2 - - - - -
+`enabled`
 
-F: - - - - - - 0 - - - - -
+`tcas_equipped`
 
-61: `Alt == 3`
+`intent_not_known`
 
-T: - - - - - - 3 - - - - -
+enabled && ((tcas_equipped && intent_not_known) || !tcas)
 
-F: - - - - - - 0 - - - - -
+`need_upward_RA && need_downward_RA`
 
-74: `Climb_Inhibit`
+`need_upward_RA`
 
-T: - - - - - - - - - - - 1
+`need_downward_RA`
 
-F: - - - - - - - - - - - 0
+main()
+`argc`
 
-83: `Inhibit_Biased_Climb() > Down_Separation`
+### Truth Tables
 
-T: - - - - - - - 0 - - - 1
+Own_Below_Threat()                  
 
-F: - - - - - - - 0 - - - 0
+| Own_Tracked_Alt < Other_Tracked_Alt |
+|-------------------------------------|
+| T                                   |
+| F                                   |
 
-~~87: `!(Own_Below_Threat()) || ((Own_Below_Threat()) && (!(Down_Separation >= ALIM())))`~~
+Own_Above_Threat()        
 
-~~91: `Own_Above_Threat() && (Cur_Vertical_Sep >= 300 ) && (Up_Separation >= ALIM())`~~
+| Other_Tracked_Alt < Own_Tracked_Alt |
+|-------------------------------------|
+| T                                   |
+| F                                   |
 
-~~107: `Own_Below_Threat() && (Cur_Vertical_Sep >= 300) && (Down_Separation >= ALIM())`~~
 
-~~111: `!(Own_Above_Threat()) || ((Own_Above_Threat()) && (Up_Separation >= ALIM())`~~
+Positive_RA_Alt_Thresh() 
 
-~~125: `High_Confidence && (Own_Tracked_Alt_Rate <= 600) && (Cur_Vertical_Sep > 600)`~~
+| Alt |
+|-----|
+| 0   |
+| 1   |
+| 2   |
+| 3   |
 
-126: `Other_Capability == 1`
 
-T: - - - - - - - - - - 1 -
+Inhibit_Biased_Climb()
 
-F: - - - - - - - - - - 0 -
 
-127: `Two_of_Three_Reports_Valid && Other_RAC == 0`
+| Climb_Inhibit |
+|---------------|
+| T             |
+| F             |
 
-T: - - 1 - - - - - - 0 - -
+Non_Crossing_Biased_Climb()
 
-F: - - 0 - - - - - - 0 - -
+`upward_preferred`
 
-~~131: `(enabled && ((tcas_equipped && intent_not_known) || !tcas_equipped)`~~
 
-133: `Non_Crossing_Biased_Climb() && Own_Below_Threat()`
+| Inhibit_Biased_Climb() > Down_Separation | upward_preferred |   |   |   |   |   |   |
+|------------------------------------------|------------------|---|---|---|---|---|---|
+| T                                        | T                |   |   |   |   |   |   |
+| F                                        | F                |   |   |   |   |   |   |
 
-T: 300 - - 1 - 0  - - - - - - 17000 - - - -
 
-F: 0 - - 1 - 0  - - - - - -  -1 - - - -
+| Climb_Inhibit | Up_Separation + 100 > Down_Separation | upward_preferred |
+|---------------|---------------------------------------|------------------|
+| T             | T                                     | T                |
+| T             | F                                     | F                |
 
-134: `Non_Crossing_Biased_Descend() && Own_Above_Threat()`
 
-T: 300 - - 1 - 0 - - 17000 - - -
+| Climb_Inhibit | Up_Separation > Down_Separation | upward_preferred |
+|---------------|---------------------------------|------------------|
+| F             | T                               | T                |
+| F             | F                               | F                |
 
-F: 0 - - 0 - 0 - - 17000 - - -
 
-136: `need_upward_RA && need_downward_RA`
+`result`
 
-T: 300 - 0 0 1 0 - - 0 - - -
+| upward_preferred | Own_Below_Threat() | Down_Separation >= ALIM() | result |
+|------------------|--------------------|---------------------------|--------|
+| T                | T                  | T                         | F      |
+| T                | T                  | F                         | T      |
+| T                | F                  | T                         | T      |
+| T                | F                  | F                         | T      |
+
+| upward_preferred | Own_Above_Threat() | Cur_Vertical_Sep >= 300 | Up_Separation >= ALIM() | result |
+|------------------|--------------------|-------------------------|-------------------------|--------|
+| F                | T                  | T                       | T                       | T      |
+| F                | T                  | T                       | F                       | F      |
+| F                | T                  | F                       | T                       | F      |
+| F                | T                  | F                       | F                       | F      |
+| F                | F                  | T                       | T                       | F      |
+| F                | F                  | T                       | F                       | F      |
+| F                | F                  | F                       | T                       | F      |
+| F                | F                  | F                       | F                       | F      |
+
+Non_Crossing_Biased_Descend
+
+`upward_preferred`
+
+
+| Inhibit_Biased_Climb() > Down_Separation | upward_preferred |
+|------------------------------------------|------------------|
+| T                                        | T                |
+| F                                        | F                |
+
+
+| Climb_Inhibit | Up_Separation + 100 > Down_Separation | upward_preferred |
+|---------------|---------------------------------------|------------------|
+| T             | T                                     | T                |
+| T             | F                                     | F                |
+
+| Climb_Inhibit | Up_Separation + 100 > Down_Separation | upward_preferred |
+|---------------|---------------------------------------|------------------|
+| T             | T                                     | T                |
+| T             | F                                     | F                |
+
+result
+
+
+| upward_preferred | Own_Below_Threat() | Cur_Vertical_Sep >= 300 | Down_Separation >= ALIM() | result |
+|------------------|--------------------|-------------------------|---------------------------|--------|
+| T                | T                  | T                       | T                         | T      |
+| T                | T                  | T                       | F                         | F      |
+| T                | T                  | F                       | T                         | F      |
+| T                | T                  | F                       | F                         | F      |
+| T                | F                  | T                       | T                         | F      |
+| T                | F                  | T                       | F                         | F      |
+| T                | F                  | F                       | T                         | F      |
+| T                | F                  | F                       | F                         | F      |
 
-F: 0 - 0 0 1 0 - - 0 - - -
 
-140: `need_upward_RA`
+| upward_preferred | Own_Above_Threat() | Up_Separation >= ALIM() | result |
+|------------------|--------------------|-------------------------|--------|
+| F                | T                  | T                       | T      |
+| F                | T                  | F                       | F      |
+| F                | F                  | T                       | T      |
+| F                | F                  | F                       | T      |
 
-T: 300 - 0 0 1 0 - - 0 - - -
+alt_sep_test()
 
-F: 0 - 0 0 1 0 - - 0 - - -
+`enabled`
 
-143: `need_downward_RA`
 
-T: 300 - - 1 - 0 - - 17000 - - -
+| High_Confidence | Own_Tracked_Alt_Rate <= 600 | Cur_Vertical_Sep > 600 | enabled |
+|-----------------|-----------------------------|------------------------|---------|
+| T               | T                           | T                      | T       |
+| T               | T                           | F                      | F       |
+| T               | F                           | T                      | F       |
+| T               | F                           | F                      | F       |
+| F               | T                           | T                      | F       |
+| F               | T                           | F                      | F       |
+| F               | F                           | T                      | F       |
+| F               | F                           | F                      | F       |
 
-F: 0 - - 1 - 0 - - 17000 - - -
+`tcas_equipped`
 
-157: `argc < 13`
+| Other_Capability == 1 | tcas_equipped |
+|-----------------------|---------------|
+| T                     | T             |
+| F                     | F             |
 
-T: 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+`intent_not_known`
 
-F:  0 0 0
+| Two_of_Three_Reports_Valid | Other_RAC == 0 | intent_not_known |
+|----------------------------|----------------|------------------|
+| T                          | T              | T                |
+| T                          | F              | F                |
+| F                          | T              | F                |
+| F                          | F              | F                |
 
-### Simplify
+`enabled && ((tcas_equipped && intent_not_known) || !tcas_equipped)`
 
------------------------------------------
+| enabled | tcas_equipped | intent_not_known | RESULT |
+|---------|---------------|------------------|--------|
+| T       | T             | T                | T      |
+| T       | T             | F                | F      |
+| T       | F             | T                | T      |
+| T       | F             | F                | T      |
+| F       | T             | T                | F      |
+| F       | T             | F                | F      |
+| F       | F             | T                | F      |
+| F       | F             | F                | F      |
 
-a: `Own_Below_Threat()`
+`need_upward_RA`
 
-b: `Down_Separation`
+| enabled | tcas_equipped | intent_not_known | RESULT |
+|---------|---------------|------------------|--------|
+| T       | T             | T                | T      |
+| T       | T             | F                | F      |
+| T       | F             | T                | T      |
+| T       | F             | F                | T      |
+| F       | T             | T                | F      |
+| F       | T             | F                | F      |
+| F       | F             | T                | F      |
+| F       | F             | F                | F      |
 
-c: `ALIM()`
+`need_downward_RA`
 
-d: `Own_Above_Threat()`
+| Non_Crossing_Biased_Descend() | Own_Above_Threat() | need_downward_RA |
+|-------------------------------|--------------------|------------------|
+| T                             | T                  | T                |
+| T                             | F                  | F                |
+| F                             | T                  | F                |
+| F                             | F                  | F                |
 
-e: `Cur_Vertical_Sep`
+`need_upward_RA && need_downward_RA`
 
-f: `Up_Separation`
 
+| need_upward_RA | need_downward_RA | need_upward_RA && need_downward_RA |
+|----------------|------------------|------------------------------------|
+| T              | T                | T                                  |
+| T              | F                | F                                  |
+| F              | T                | F                                  |
+| F              | F                | F                                  |
 
-87: `!(a) || ((a) && (!(b >= c)))`
+main()
+`argc`
 
-T: 300 - - 0 - 0 - - 0 - - -
+| argc < 13 |
+|-----------|
+| T         |
+| F         |
 
-F: 300 - - 0 - 0 - - 16435 - - -
+### Test Case Generation
 
+ - Own_Tracked_Alt > Other_Tracked_Alt and a case with Other_Tracked_Alt > Own_Tracked_Alt
 
-91: `d && (e >= 300) && (f >= c)`
+ - Cases where Alt_Layer_Value = {0, 1, 2, 3}
 
-T: 300 - - 1 - 0  - - - - - - 17000 - - - -
+ - Cases where Climb_Inhibit = 0 and Climb_Inhibit = 1
 
-F: 0 - - 1 - 0  - - - - - -  -1 - - - -
+ - Cases where Up_Separation + 100 > Down_Separation and Up_Separation < Down_Separation
 
-107: `a && (e >= 300) && (b >= c)`
+ - Cases with Cur_Vertical_Sep = 700 (Cur_Vertical_Sep > 600) and Cur_Vertical_Sep = 5(Cur_Vertical_Sep <= 300
 
-T: 300 - - 1 - 0 - - 17000 - - -
+ - High_Confidence = 1
 
-F: 0 - - 0 - 0 - - 17000 - - -
+ - Two_of_Three_Reports_Valid = 1
 
-111: `!(d) || ((d) && (f >= c)`
+ - Own_Tracked_Alt_Rate = 1 (Own_Tracked_Alt_Rate <= 600)
 
-T: - - - 0 - 0 - - - - - -
+ - Other_RAC = {0,1}
 
-F: - - - 1 - 0 - - - - - -
+ - Other_Capability = {0,1}
 
-125: `High_Confidence && (Own_Tracked_Alt_Rate <= 600) && (e > 600)`
+A=Cur_Vertical_Sep
 
-T: 601 1 - - 1 - - - - - - -
+B=High_Confidence
 
-F: 0 1 - - 1 - - - - - - -
+C=Two_of_Three_Reports_Valid
 
-131: `(enabled && ((tcas_equipped && intent_not_known) || !tcas_equipped)`
+D=Own_Tracked_Alt
 
-T: - - - - - - - - - - 0 -
+E=Own_Tracked_Alt_Rate
 
-F: 0 1 - - 1 - - - - - - -
+F=Other_Tracked_Alt
+
+G=Alt_Layer_Value
+
+H=Up_Separation
+
+I=Down_Separation
+
+J=Other_RAC
+
+K=Other_Capability
+
+L=Climb_Inhibit
+
+
+| A   | B | C | D | E | F | G | H   | I   | J | K | L |
+|-----|---|---|---|---|---|---|-----|-----|---|---|---|
+| 700 | 1 | 1 | 0 | 1 | 1 | 0 | 500 | 100 | 0 | 0 | 0 |
+| 700 | 1 | 1 | 1 | 1 | 0 | 1 | 500 | 100 | 1 | 1 | 1 |
+| 700 | 1 | 1 | 1 | 1 | 0 | 2 | 100 | 500 | 0 | 0 | 0 |
+| 700 | 1 | 1 | 1 | 1 | 0 | 3 | 100 | 500 | 0 | 0 | 0 |
+| 50  | 1 | 1 | 1 | 1 | 0 | 3 | 100 | 500 | 1 | 1 | 1 |
+
+### Results
+
+
+```bash
+
+File 'tcas.c'
+Lines executed:94.17% of 120
+Branches executed:100.00% of 74
+Taken at least once:75.68% of 74
+Calls executed:90.48% of 63
+Creating 'tcas.c.gcov'
+
+Lines executed:94.17% of 120
+
+
+
+```
+
+
+## Active Clause Coverage
+
+1) `result = !(Own_Below_Threat()) || ((Own_Below_Threat()) && (!(Down_Separation >= ALIM())));`
+=>  !A | (A & !(B))
+
+| Row# |   | A | B |   | P |   | PA | PB |
+|------|---|---|---|---|---|---|----|----|
+| 1    |   | T | T |   |   |   | T  | T  |
+| 2    |   | T |   |   | T |   |    | T  |
+| 3    |   |   | T |   | T |   | T  |    |
+| 4    |   |   |   |   | T |   |    |    |
+
+| Major Clause | Set of possible tests |
+|--------------|-----------------------|
+| A            | (1,3)                 |
+| B            | (1,2)                 |
+
+input: 
+
+2) `result = Own_Above_Threat() && (Cur_Vertical_Sep >= 300 ) && (Up_Separation >= ALIM());`
+=> A & B & C
+
+| Row# |   | A | B | C |   | P |   | PA | PB | PC |
+|------|---|---|---|---|---|---|---|----|----|----|
+| 1    |   | T | T | T |   | T |   | T  | T  | T  |
+| 2    |   | T | T |   |   |   |   |    |    | T  |
+| 3    |   | T |   | T |   |   |   |    | T  |    |
+| 4    |   | T |   |   |   |   |   |    |    |    |
+| 5    |   |   | T | T |   |   |   | T  |    |    |
+| 6    |   |   | T |   |   |   |   |    |    |    |
+| 7    |   |   |   | T |   |   |   |    |    |    |
+| 8    |   |   |   |   |   |   |   |    |    |    |
+
+| Major Clause | Set of possible tests |
+|--------------|-----------------------|
+|              |                       |
+| A            | (1,5)                 |
+| B            | (1,3)                 |
+| C            | (1,2)                 |
+
+3) `result = Own_Below_Threat() && (Cur_Vertical_Sep >= 300) && (Down_Separation >= ALIM());`
+=> A & B & C
+
+| Row# |   | A | B | C |   | P |   | PA | PB | PC |
+|------|---|---|---|---|---|---|---|----|----|----|
+| 1    |   | T | T | T |   | T |   | T  | T  | T  |
+| 2    |   | T | T |   |   |   |   |    |    | T  |
+| 3    |   | T |   | T |   |   |   |    | T  |    |
+| 4    |   | T |   |   |   |   |   |    |    |    |
+| 5    |   |   | T | T |   |   |   | T  |    |    |
+| 6    |   |   | T |   |   |   |   |    |    |    |
+| 7    |   |   |   | T |   |   |   |    |    |    |
+| 8    |   |   |   |   |   |   |   |    |    |    |
+
+| Major Clause | Set of possible tests |
+|--------------|-----------------------|
+|              |                       |
+| A            | (1,5)                 |
+| B            | (1,3)                 |
+| C            | (1,2)                 |
+
+4) `result = !(Own_Above_Threat()) || ((Own_Above_Threat()) && (Up_Separation >= ALIM()));`
+=> !A | (A & B)
+
+| Row# |   | A | B |   | P |   | PA | PB |
+|------|---|---|---|---|---|---|----|----|
+| 1    |   | T | T |   | T |   |    | T  |
+| 2    |   | T |   |   |   |   | T  | T  |
+| 3    |   |   | T |   | T |   |    |    |
+| 4    |   |   |   |   | T |   | T  |    |
+
+| Major Clause | Set of possible tests |
+|--------------|-----------------------|
+|              |                       |
+| A            | (2,4)                 |
+| B            | (1,2)                 |
+
+5) `enabled = High_Confidence && (Own_Tracked_Alt_Rate <= 600) && (Cur_Vertical_Sep > 600);`
+=> A & B & C
+
+| Row# |   | A | B | C |   | P |   | PA | PB | PC |
+|------|---|---|---|---|---|---|---|----|----|----|
+| 1    |   | T | T | T |   | T |   | T  | T  | T  |
+| 2    |   | T | T |   |   |   |   |    |    | T  |
+| 3    |   | T |   | T |   |   |   |    | T  |    |
+| 4    |   | T |   |   |   |   |   |    |    |    |
+| 5    |   |   | T | T |   |   |   | T  |    |    |
+| 6    |   |   | T |   |   |   |   |    |    |    |
+| 7    |   |   |   | T |   |   |   |    |    |    |
+| 8    |   |   |   |   |   |   |   |    |    |    |
+
+| Major Clause | Set of possible tests |
+|--------------|-----------------------|
+|              |                       |
+| A            | (1,5)                 |
+| B            | (1,3)                 |
+| C            | (1,2)                 |
+
+6) `intent_not_known = Two_of_Three_Reports_Valid && Other_RAC == 0 ;`
+=> A & B
+
+| Row# |   | A | B |   | P |   | PA | PB |
+|------|---|---|---|---|---|---|----|----|
+| 1    |   | T | T |   | T |   | T  | T  |
+| 2    |   | T |   |   |   |   |    | T  |
+| 3    |   |   | T |   |   |   | T  |    |
+| 4    |   |   |   |   |   |   |    |    |
+
+| Major Clause | Set of possible tests |
+|--------------|-----------------------|
+|              |                       |
+| A            | (1,3)                 |
+| B            | (1,2)                 |
+
+7) `need_upward_RA = Non_Crossing_Biased_Climb() && Own_Below_Threat() ;`
+=> A & B
+
+| Row# |   | A | B |   | P |   | PA | PB |
+|------|---|---|---|---|---|---|----|----|
+| 1    |   | T | T |   | T |   | T  | T  |
+| 2    |   | T |   |   |   |   |    | T  |
+| 3    |   |   | T |   |   |   | T  |    |
+| 4    |   |   |   |   |   |   |    |    |
+
+| Major Clause | Set of possible tests |
+|--------------|-----------------------|
+|              |                       |
+| A            | (1,3)                 |
+| B            | (1,2)                 |
+
+8) `need_downward_RA = Non_Crossing_Biased_Descend() && Own_Above_Threat();`
+=> A & B
+
+| Row# |   | A | B |   | P |   | PA | PB |
+|------|---|---|---|---|---|---|----|----|
+| 1    |   | T | T |   | T |   | T  | T  |
+| 2    |   | T |   |   |   |   |    | T  |
+| 3    |   |   | T |   |   |   | T  |    |
+| 4    |   |   |   |   |   |   |    |    |
+
+| Major Clause | Set of possible tests |
+|--------------|-----------------------|
+|              |                       |
+| A            | (1,3)                 |
+| B            | (1,2)                 |
+
+9) `need_upward_RA && need_downward_RA`
+=> A & B - unreachable
+
+| Row# |   | A | B |   | P |   | PA | PB |
+|------|---|---|---|---|---|---|----|----|
+| 1    |   | T | T |   | T |   | T  | T  |
+| 2    |   | T |   |   |   |   |    | T  |
+| 3    |   |   | T |   |   |   | T  |    |
+| 4    |   |   |   |   |   |   |    |    |
+
+| Major Clause | Set of possible tests |
+|--------------|-----------------------|
+|              |                       |
+| A            | (1,3)                 |
+| B            | (1,2)                 |
 
 
