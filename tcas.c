@@ -19,6 +19,35 @@ int Positive_RA_Alt_Thresh_1;
 int Positive_RA_Alt_Thresh_2;
 int Positive_RA_Alt_Thresh_3;
 
+void print_args() {
+    printf("\nargs: ");
+    printf("%d", Cur_Vertical_Sep);
+    printf(" ");
+    printf("%d", High_Confidence);
+    printf(" ");
+    printf("%d", Two_of_Three_Reports_Valid);
+    printf(" ");
+    printf("%d", Own_Tracked_Alt);
+    printf(" ");
+    printf("%d", Own_Tracked_Alt_Rate);
+    printf(" ");
+    printf("%d", Other_Tracked_Alt);
+    printf(" ");
+    printf("%d", Alt_Layer_Value);
+    printf(" ");
+    printf("%d", Up_Separation);
+    printf(" ");
+    printf("%d", Down_Separation);
+    printf(" ");
+    printf("%d", Other_RAC);
+    printf(" ");
+    printf("%d", Other_Capability);
+    printf(" ");
+    printf("%d", Climb_Inhibit);
+    printf(" ");
+    printf("\n");
+}
+
 int Own_Below_Threat()
 {
     return (Own_Tracked_Alt < Other_Tracked_Alt);
@@ -47,19 +76,24 @@ void initialize()
 int Positive_RA_Alt_Thresh(int Alt)
 {
     int res = 0;
+    printf("in Positive_RA_Alt_Thresh\n");
 
     if(Alt == 0) {
         res = Positive_RA_Alt_Thresh_0;
+        printf("branch 0\n");
     }
     else if(Alt == 1) {
         res = Positive_RA_Alt_Thresh_1;
+        printf("branch 1\n");
+
     }
     else if( Alt == 2) {
         res = Positive_RA_Alt_Thresh_2;
-
+        printf("branch 2\n");
     }
     else if(Alt == 3) {
         res = Positive_RA_Alt_Thresh_3;
+        printf("branch 3\n");
     }
     return res;
 }
@@ -81,13 +115,18 @@ int Non_Crossing_Biased_Climb()
     int result;
     
     upward_preferred = Inhibit_Biased_Climb() > Down_Separation;
-    
+    printf("in Non_Crossing_Biased_Climb\n");
+
     if (upward_preferred)
     {
+        printf("in Non_Crossing_Biased_Climb, upward_preferred == true\n");
         result = !(Own_Below_Threat()) || ((Own_Below_Threat()) && (!(Down_Separation >= ALIM())));
     }
     else
     {
+        printf("in Non_Crossing_Biased_Climb, upward_preferred == false\n");
+        print_args();
+        printf("Own_Above_Threat %d\n", Own_Above_Threat());
         result = Own_Above_Threat() && (Cur_Vertical_Sep >= 300 ) && (Up_Separation >= ALIM());
     }
     
@@ -134,6 +173,7 @@ int alt_sep_test()
         need_downward_RA = Non_Crossing_Biased_Descend() && Own_Above_Threat();
         
         if(need_upward_RA && need_downward_RA) {
+            // i think this is unreachable
             alt_sep = 0;
         }
         else {
