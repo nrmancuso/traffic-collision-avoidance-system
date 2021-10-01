@@ -19,35 +19,6 @@ int Positive_RA_Alt_Thresh_1;
 int Positive_RA_Alt_Thresh_2;
 int Positive_RA_Alt_Thresh_3;
 
-void print_args() {
-    printf("\nargs: ");
-    printf("%d\n", Cur_Vertical_Sep);
-    printf(" ");
-    printf("%d\n", High_Confidence);
-    printf(" ");
-    printf("%d\n", Two_of_Three_Reports_Valid);
-    printf(" ");
-    printf("%d\n", Own_Tracked_Alt);
-    printf(" ");
-    printf("%d\n", Own_Tracked_Alt_Rate);
-    printf(" ");
-    printf("%d\n", Other_Tracked_Alt);
-    printf(" ");
-    printf("%d\n", Alt_Layer_Value);
-    printf(" ");
-    printf("%d\n", Up_Separation);
-    printf(" ");
-    printf("%d\n", Down_Separation);
-    printf(" ");
-    printf("%d\n", Other_RAC);
-    printf(" ");
-    printf("%d\n", Other_Capability);
-    printf(" ");
-    printf("%d\n", Climb_Inhibit);
-    printf(" ");
-    printf("\n");
-}
-
 int Own_Below_Threat()
 {
     return (Own_Tracked_Alt < Other_Tracked_Alt);
@@ -146,7 +117,7 @@ int Non_Crossing_Biased_Descend()
     else
     {
         result = !(Own_Above_Threat()) || ((Own_Above_Threat()) && (Up_Separation >= ALIM()));
-        printf("#4 A: %d B: %d C: %d\n", !(Own_Above_Threat()), ((Own_Above_Threat()), (Up_Separation >= ALIM())));
+        printf("#4 A: %d B: %d\n", Own_Above_Threat(), (Up_Separation >= ALIM()));
     }
     
     return result;
