@@ -11,7 +11,7 @@ CFLAGS  = -g -Wall
 TARGET = tcas
 
 # file types to clean
-FILE_TYPES_TO_CLEAN = *.exec *~ *.gcov *.gcda *.gcno *.out
+FILE_TYPES_TO_CLEAN = *.exec *~ *.gcov *.gcda *.gcno *.out *.html *.css
 
 all: $(TARGET).exec
 

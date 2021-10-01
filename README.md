@@ -327,9 +327,11 @@ Creating 'tcas.c.gcov'
 Lines executed:94.17% of 120
 
 
-
 ```
 
+### Analysis
+
+It is not possible to satisfy 100% predicate coverage, since `need_upward_RA` and `need_downward_RA` will never both be true; this is because TODO: finish
 
 ## Active Clause Coverage
 
