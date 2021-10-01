@@ -30,14 +30,31 @@ test: $(TARGET).c
 	./$(TARGET).exec 700 1 1 1 1 0 3 100 500 0 0 0
 	./$(TARGET).exec 50 1 1 1 1 0 3 100 500 1 1 1
 
-	
+
 	gcov -b $(TARGET).exec-$(TARGET).gcno
 	gcovr -r . --html --html-details -o predicate_coverage.html
 
 	make clean
 		$(CC) -fprofile-arcs -ftest-coverage -o $(TARGET).exec $(TARGET).c
 	# Test Suite #2, ACC
-	
+	./$(TARGET).exec 700 1 1 0 1 1 0 60000 34567 0 0 34568
+	./$(TARGET).exec 700 1 1 0 1 1 0 500 100 0 0 0
+	./$(TARGET).exec 700 1 1 3 1 1 0 60000 34567 0 0 34568
+
+	./$(TARGET).exec 700 1 1 1 1 0 3 100 500 0 0 0
+	./$(TARGET).exec 700 1 1 1 1 0 3 -1 500 0 0 0
+	#./$(TARGET).exec 299 1 1 1 1 0 3 100 500 0 0 0
+	 ./$(TARGET).exec 700 1 1 -1 1 0 3 100 500 0 0 0
+
+	 ./$(TARGET).exec 0 1 1 0 1 1 0 60000 34567 0 0 34568
+	 ./$(TARGET).exec 700 1 1 0 1 1 0 500 100 0 0 0
+	 ./$(TARGET).exec 0 1 1 0 1 1 0 60000 34567 0 0 34568
+	 ./$(TARGET).exec 700 1 1 3 1 1 0 60000 34567 0 0 34568
+
+
+
+
+
 
 clean:
 	$(RM) $(FILE_TYPES_TO_CLEAN)

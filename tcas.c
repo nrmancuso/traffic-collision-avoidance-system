@@ -119,12 +119,12 @@ int Non_Crossing_Biased_Climb()
     if (upward_preferred)
     {
         result = !(Own_Below_Threat()) || ((Own_Below_Threat()) && (!(Down_Separation >= ALIM())));
-        printf("#1 A: %d B: %d C: %d\n", !(Own_Below_Threat()), Own_Below_Threat(), !(Down_Separation >= ALIM()));
+        printf("#1 A: %d B: %d\n", Own_Below_Threat(), (Down_Separation >= ALIM()));
     }
     else
     {
         result = Own_Above_Threat() && (Cur_Vertical_Sep >= 300 ) && (Up_Separation >= ALIM());
-            printf("#2 A: %d B: %d C: %d\n", Own_Above_Threat(), (Cur_Vertical_Sep >= 300 ),  (Up_Separation >= ALIM()));
+            printf("#2 A: %d B: %d C: %d\n", Own_Above_Threat(), (Cur_Vertical_Sep >= 300),  (Up_Separation >= ALIM()));
     }
     
     return result;
@@ -168,6 +168,7 @@ int alt_sep_test()
     
     alt_sep = 0 ;
     
+    printf("#9 A: %d B: %d C: %d\n", enabled, tcas_equipped, intent_not_known);
     if (enabled && ((tcas_equipped && intent_not_known) || !tcas_equipped))
     {
         need_upward_RA = Non_Crossing_Biased_Climb() && Own_Below_Threat();

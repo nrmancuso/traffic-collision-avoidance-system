@@ -348,7 +348,10 @@ Lines executed:94.17% of 120
 | A            | (1,3)                 |
 | B            | (1,2)                 |
 
-input: 
+input: (T, T) 700 1 1 0 1 1 0 60000 34567 0 0 34568
+input: (T, F) 700 1 1 0 1 1 0 500 100 0 0 0
+input: (F, T) 700 1 1 3 1 1 0 60000 34567 0 0 34568
+
 
 2) `result = Own_Above_Threat() && (Cur_Vertical_Sep >= 300 ) && (Up_Separation >= ALIM());`
 => A & B & C
@@ -371,6 +374,11 @@ input:
 | B            | (1,3)                 |
 | C            | (1,2)                 |
 
+input: (T, T, T) 700 1 1 1 1 0 3 100 500 0 0 0
+input: (T, T, F) 700 1 1 1 1 0 3 -1 500 0 0 0
+input: (T, F, T) =><=, `enabled` must be true to reach this condition, which requires `Cur_Vertical_Sep > 600`
+input: (F, T, T) 700 1 1 -1 1 0 3 100 500 0 0 0
+
 3) `result = Own_Below_Threat() && (Cur_Vertical_Sep >= 300) && (Down_Separation >= ALIM());`
 => A & B & C
 
@@ -391,6 +399,11 @@ input:
 | A            | (1,5)                 |
 | B            | (1,3)                 |
 | C            | (1,2)                 |
+
+input: (T, T, T) 0 1 1 0 1 1 0 60000 34567 0 0 34568
+input: (T, T, F) 700 1 1 0 1 1 0 500 100 0 0 0
+input: (T, F, T) =><=, `enabled` must be true to reach this condition, which requires `Cur_Vertical_Sep > 600`
+input: (F, T, T) 700 1 1 3 1 1 0 60000 34567 0 0 34568
 
 4) `result = !(Own_Above_Threat()) || ((Own_Above_Threat()) && (Up_Separation >= ALIM()));`
 => !A | (A & B)
@@ -477,20 +490,25 @@ input:
 | A            | (1,3)                 |
 | B            | (1,2)                 |
 
-9) `need_upward_RA && need_downward_RA`
-=> A & B - unreachable
+9) `(enabled && ((tcas_equipped && intent_not_known) || !tcas_equipped)`
+=> A & (( B & C ) | !(B))
 
-| Row# |   | A | B |   | P |   | PA | PB |
-|------|---|---|---|---|---|---|----|----|
-| 1    |   | T | T |   | T |   | T  | T  |
-| 2    |   | T |   |   |   |   |    | T  |
-| 3    |   |   | T |   |   |   | T  |    |
-| 4    |   |   |   |   |   |   |    |    |
+| Row# |   | A | B | C |   | P |   | PA | PB | PC |
+|------|---|---|---|---|---|---|---|----|----|----|
+| 1    |   | T | T | T |   | T |   | T  |    | T  |
+| 2    |   | T | T |   |   |   |   |    | T  | T  |
+| 3    |   | T |   | T |   | T |   | T  |    |    |
+| 4    |   | T |   |   |   | T |   | T  | T  |    |
+| 5    |   |   | T | T |   |   |   | T  |    |    |
+| 6    |   |   | T |   |   |   |   |    |    |    |
+| 7    |   |   |   | T |   |   |   | T  |    |    |
+| 8    |   |   |   |   |   |   |   | T  |    |    |
 
-| Major Clause | Set of possible tests |
-|--------------|-----------------------|
-|              |                       |
-| A            | (1,3)                 |
-| B            | (1,2)                 |
+| Major Clause | Set of possible tests                                         |
+|--------------|---------------------------------------------------------------|
+|              |                                                               |
+| A            | (1,5), (1,7), (1,8), (3,5), (3,7), (3,8), (4,5), (4,7), (4,8) |
+| B            | (2,4)                                                         |
+| C            | (1,2)                                                         |
 
 
