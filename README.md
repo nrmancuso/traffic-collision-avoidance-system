@@ -349,7 +349,9 @@ Lines executed:94.17% of 120
 | B            | (1,2)                 |
 
 input: (T, T) 700 1 1 0 1 1 0 60000 34567 0 0 34568
+
 input: (T, F) 700 1 1 0 1 1 0 500 100 0 0 0
+
 input: (F, T) 700 1 1 3 1 1 0 60000 34567 0 0 34568
 
 
@@ -375,8 +377,11 @@ input: (F, T) 700 1 1 3 1 1 0 60000 34567 0 0 34568
 | C            | (1,2)                 |
 
 input: (T, T, T) 700 1 1 1 1 0 3 100 500 0 0 0
+
 input: (T, T, F) 700 1 1 1 1 0 3 -1 500 0 0 0
+
 input: (T, F, T) =><=, `enabled` must be true to reach this condition, which requires `Cur_Vertical_Sep > 600`
+
 input: (F, T, T) 700 1 1 -1 1 0 3 100 500 0 0 0
 
 3) `result = Own_Below_Threat() && (Cur_Vertical_Sep >= 300) && (Down_Separation >= ALIM());`
@@ -401,8 +406,11 @@ input: (F, T, T) 700 1 1 -1 1 0 3 100 500 0 0 0
 | C            | (1,2)                 |
 
 input: (T, T, T) 0 1 1 0 1 1 0 60000 34567 0 0 34568
+
 input: (T, T, F) 700 1 1 0 1 1 0 500 100 0 0 0
+
 input: (T, F, T) =><=, `enabled` must be true to reach this condition, which requires `Cur_Vertical_Sep > 600`
+
 input: (F, T, T) 700 1 1 3 1 1 0 60000 34567 0 0 34568
 
 4) `result = !(Own_Above_Threat()) || ((Own_Above_Threat()) && (Up_Separation >= ALIM()));`
