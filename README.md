@@ -331,7 +331,11 @@ Lines executed:94.17% of 120
 
 ### Analysis
 
-It is not possible to satisfy 100% predicate coverage, since `need_upward_RA` and `need_downward_RA` will never both be true; this is because TODO: finish
+It is not possible to satisfy 100% predicate coverage, since `need_upward_RA` and `need_downward_RA` will never both be true; we can never take this branch. Creating this
+test suite was challenging because of all of the nested conditions that caused reachability issues. It was not enough to simply satisfy the given condition; we had to
+make sure that we were able to reach the necessary branches. Another issue was mutability; since some of the variables are mutated once the program is run, it
+made it even more difficult to track the behavior that tweaking each input would
+have.
 
 ## Active Clause Coverage
 
@@ -562,3 +566,27 @@ input: (F, T, T) 0 1 1 0 1 1 0 60000 34567 0 1 34568
 input: (T, T, F) 700 1 1 1 1 0 1 500 100 1 1 1
 
 input: (T, F, F) 700 1 1 -1 1 0 3 100 500 1 -1 0
+
+### Results
+
+
+```bash
+
+gcov -b tcas.exec-tcas.gcno
+File 'tcas.c'
+Lines executed:92.31% of 91
+Branches executed:100.00% of 74
+Taken at least once:89.19% of 74
+Calls executed:87.23% of 47
+Creating 'tcas.c.gcov'
+
+
+```
+
+Note that "Lines executed" seems to have dropped, but this is due to extra instrumentation required by ACC.
+
+### Analysis
+
+It was not possible to satisfy ACC either, since major clauses for some conditions
+generated possible tests that could not be satisfied. See (2) and (3) for examples of this. This test suite was even more challenging to create because reachability became
+more difficult when we had to satisfy ACC. Additionally, mutability hurt us here as well. However, it was trivial to construct test cases for the predicates with single clauses since ACC collapses into predicate coverage in these cases, and they have been worked out above; for this reason, they have not been included the ACC section.
