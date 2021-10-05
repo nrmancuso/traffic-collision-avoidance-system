@@ -1,5 +1,7 @@
 # traffic-collision-avoidance-system
 
+Scott Fones and Nick Mancuso
+
 ## Predicate Coverage
 
 ### Predicates
